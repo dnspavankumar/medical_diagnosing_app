@@ -1,154 +1,192 @@
 <!DOCTYPE html>
 <html lang="en" data-theme="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Analyze Image Application</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
-    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Analyze Image Application</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <style>
+    /* Body has a dark background and a dark overlay on the background image */
+    body {
+      position: relative;
+      margin: 0;
+      padding: 0;
+      font-family: 'Poppins', sans-serif;
+      background-color: #333131; /* Dark fallback color */
+    }
+    body::before {
+      content: "";
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      /* Combine a dark overlay with your background image */
+      background: linear-gradient(rgba(5, 4, 4, 0.5), rgba(0, 0, 0, 0.5)),
+                  url('background.jpeg') no-repeat center center/cover;
+      opacity: 0.1;            
+      z-index: -1;
+    }
+    .glass {
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 15px;
+      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.37);
+      backdrop-filter: blur(3px);
+      border: 1px solid rgb(255, 255, 255);
+    }
+  </style>
 </head>
-<body class="min-h-screen bg-gradient-to-br from-gray-900 to-gray-800 text-gray-300 font-sans">
-
-    <div class="container mx-auto p-6">
-        <div class="flex items-center justify-center mb-12">
-            <i class="fas fa-camera text-6xl text-gray-400 mr-4"></i>
-            <h1 class="text-4xl font-bold text-purple-300 shadow-md">AI-DOCTOR (MEDICAL CHATBOT) ANALYZE IMAGE APPLICATION</h1>
+<body class="min-h-screen flex items-center justify-center p-6">
+  <div class="container mx-auto p-6">
+    <!-- Main Header with PNG icon -->
+    <div class="flex items-center justify-center mb-12">
+      <img src="camera.png" alt="Camera Icon" class="h-[60px] w-[60px] mr-4 inline-block" />
+      <h1 class="text-4xl font-bold bg-gradient-to-r from-pink-500 to-yellow-500 bg-clip-text text-transparent shadow-md">
+        MEDIC Vision
+      </h1>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
+      <!-- Upload Image Card -->
+      <div class="glass p-6 rounded-xl shadow-lg border border-white/20">
+        <h2 class="text-xl font-semibold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent mb-4">
+          <img src="upload.png" alt="Upload Icon" class="h-[24px] w-[24px] inline-block mr-2" />
+          Upload Image
+        </h2>
+        <button id="upload-btn" class="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-2xl transition-all transform hover:scale-105">
+          Click to Upload
+        </button>
+        <input type="file" id="image-upload" accept="image/*" class="hidden" />
+        <div id="image-container" class="hidden mt-4">
+          <img id="display-image" src="" alt="Uploaded image" class="w-full rounded-lg shadow-lg" />
         </div>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-            
-            <!-- Upload Image Card -->
-            <div class="bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20">
-                <h2 class="text-xl font-semibold text-purple-400 mb-4">📤 Upload Image</h2>
-                
-                <button id="upload-btn" class="w-full py-3 bg-purple-500 hover:bg-purple-600 text-white font-bold rounded-md transition-all">
-                    📸 Click to Upload
-                </button>
-                
-                <input type="file" id="image-upload" accept="image/*" class="hidden" />
-                
-                <div id="image-container" class="hidden mt-4">
-                    <img id="display-image" src="" alt="Uploaded image" class="w-full rounded-lg shadow-lg" />
-                </div>
-            </div>
+      </div>
 
-            <!-- Ask Question Card -->
-            <div class="bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20">
-                <h2 class="text-xl font-semibold text-blue-400 mb-4">💬 Ask Question</h2>
-                <textarea id="query-input" rows="4" placeholder="Enter your question about the image"
-                    class="w-full p-3 bg-gray-800 text-gray-300 rounded-lg shadow"></textarea>
-                <button id="submit-query" class="w-full bg-blue-500 hover:bg-blue-600 text-white font-bold py-2 px-4 rounded-lg mt-3 transition-all">
-                    🚀 Submit Query
-                </button>
-            </div>
-
-        </div>
-        
-        <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-            
-            <!-- Llama Response -->
-            <div class="bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20">
-                <h2 class="text-xl font-semibold text-green-400">🤖 Llama-3.2-11b-vision Response</h2>
-                <div id="response-container-llama11b" class="hidden mt-4 bg-gray-800 p-4 rounded text-gray-300"></div>
-            </div>
-            
-            <!-- Llava Response -->
-            <div class="bg-white/10 backdrop-blur-md p-6 rounded-xl shadow-lg border border-white/20">
-                <h2 class="text-xl font-semibold text-green-400">🤖 Llama-3.2-90b-vision Response</h2>
-                <div id="response-container-llama90b" class="hidden mt-4 bg-gray-800 p-4 rounded text-gray-300"></div>
-            </div>
-
-        </div>
-
-        <!-- Error Message -->
-        <div id="error-container" class="hidden mt-8 p-4 bg-red-500 text-white rounded">
-            <p id="error-text"></p>
-        </div>
+      <!-- Ask Question Card -->
+      <div class="glass p-6 rounded-xl shadow-lg border border-white/20">
+        <h2 class="text-xl font-semibold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-4">
+          <img src="question.png" alt="Question Icon" class="h-[24px] w-[24px] inline-block mr-2" />
+          Ask Question
+        </h2>
+        <textarea id="query-input" rows="4" placeholder="Enter your question about the image" class="w-full p-3 bg-gray-800 text-gray-300 rounded-lg shadow"></textarea>
+        <button id="submit-query" class="w-full bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-2xl mt-3 transition-all transform hover:scale-105">
+          <img src="rocket.png" alt="Rocket Icon" class="h-[24px] w-[24px] inline-block mr-2" />
+          Submit Query
+        </button>
+      </div>
+    </div>
+    
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
+      <!-- Llama-3.2-11b-vision Response Card -->
+      <div class="glass p-6 rounded-xl shadow-lg border border-white/20">
+        <h2 class="text-xl font-semibold bg-gradient-to-r from-green-500 to-teal-500 bg-clip-text text-transparent">
+          <img src="robot.png" alt="Robot Icon" class="h-[24px] w-[24px] inline-block mr-2" />
+          IMAGE ANALYSIS
+        </h2>
+        <div id="response-container-llama11b" class="hidden mt-4 bg-gray-800 p-4 rounded text-gray-300"></div>
+      </div>
+      
+      <!-- Llama-3.2-90b-vision Response Card -->
+      <div class="glass p-6 rounded-xl shadow-lg border border-white/20">
+        <h2 class="text-xl font-semibold bg-gradient-to-r from-green-500 to-teal-500 bg-clip-text text-transparent">
+          <img src="robot.png" alt="Robot Icon" class="h-[24px] w-[24px] inline-block mr-2" />
+            DEEP ANALYSIS
+        </h2>
+        <div id="response-container-llama90b" class="hidden mt-4 bg-gray-800 p-4 rounded text-gray-300"></div>
+      </div>
     </div>
 
-    <script>
-        document.addEventListener('DOMContentLoaded', function() {
-            const uploadBtn = document.getElementById('upload-btn');
-            const imageUpload = document.getElementById('image-upload');
-            const displayImage = document.getElementById('display-image');
-            const imageContainer = document.getElementById('image-container');
-            const queryInput = document.getElementById('query-input');
-            const submitQuery = document.getElementById('submit-query');
-            const responseLlama = document.getElementById('response-container-llama11b');
-            const responseLlava = document.getElementById('response-container-llama90b');
-            const errorContainer = document.getElementById('error-container');
-            const errorText = document.getElementById('error-text');
+    <!-- Error Message -->
+    <div id="error-container" class="hidden mt-8 p-4 bg-red-500 text-white rounded">
+      <p id="error-text"></p>
+    </div>
+  </div>
 
-            // Click to Upload button trigger
-            uploadBtn.addEventListener('click', () => {
-                imageUpload.click();
-            });
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      const uploadBtn = document.getElementById('upload-btn');
+      const imageUpload = document.getElementById('image-upload');
+      const displayImage = document.getElementById('display-image');
+      const imageContainer = document.getElementById('image-container');
+      const queryInput = document.getElementById('query-input');
+      const submitQuery = document.getElementById('submit-query');
+      const responseLlama = document.getElementById('response-container-llama11b');
+      const responseLlava = document.getElementById('response-container-llama90b');
+      const errorContainer = document.getElementById('error-container');
+      const errorText = document.getElementById('error-text');
 
-            // Display uploaded image
-            imageUpload.addEventListener('change', (event) => {
-                const file = event.target.files[0];
-                if (file) {
-                    const reader = new FileReader();
-                    reader.onload = (e) => {
-                        displayImage.src = e.target.result;
-                        imageContainer.classList.remove('hidden');
-                    };
-                    reader.readAsDataURL(file);
-                }
-            });
+      // Trigger file upload dialog
+      uploadBtn.addEventListener('click', () => {
+        imageUpload.click();
+      });
 
-            // Submit Query
-            submitQuery.addEventListener('click', async () => {
-                const image = imageUpload.files[0];
-                const query = queryInput.value;
+      // Display uploaded image
+      imageUpload.addEventListener('change', (event) => {
+        const file = event.target.files[0];
+        if (file) {
+          const reader = new FileReader();
+          reader.onload = (e) => {
+            displayImage.src = e.target.result;
+            imageContainer.classList.remove('hidden');
+          };
+          reader.readAsDataURL(file);
+        }
+      });
 
-                if (!image || !query) {
-                    showError('⚠️ Please upload an image and enter a query.');
-                    return;
-                }
+      // Submit query along with image
+      submitQuery.addEventListener('click', async () => {
+        const image = imageUpload.files[0];
+        const query = queryInput.value;
 
-                const formData = new FormData();
-                formData.append('image', image);
-                formData.append('query', query);
+        if (!image || !query) {
+          showError('⚠️ Please upload an image and enter a query.');
+          return;
+        }
 
-                try {
-                    submitQuery.disabled = true;
-                    submitQuery.textContent = 'Processing... ⏳';
+        const formData = new FormData();
+        formData.append('image', image);
+        formData.append('query', query);
 
-                    const response = await fetch('/upload_and_query', {
-                        method: 'POST',
-                        body: formData
-                    });
+        try {
+          submitQuery.disabled = true;
+          submitQuery.textContent = 'Processing... ⏳';
 
-                    const result = await response.json();
+          const response = await fetch('/upload_and_query', {
+            method: 'POST',
+            body: formData
+          });
 
-                    if (!response.ok) {
-                        throw new Error(result.detail || 'An error occurred while processing your request.');
-                    }
+          const result = await response.json();
 
-                    responseLlama.innerHTML = marked.parse(result.llama);
-                    responseLlama.classList.remove('hidden');
-                    responseLlava.innerHTML = marked.parse(result.llava);
-                    responseLlava.classList.remove('hidden');
-                    errorContainer.classList.add('hidden');
-                } catch (error) {
-                    console.error('Error:', error);
-                    showError(error.message);
-                } finally {
-                    submitQuery.disabled = false;
-                    submitQuery.textContent = '🚀 Submit Query';
-                }
-            });
+          if (!response.ok) {
+            throw new Error(result.detail || 'An error occurred while processing your request.');
+          }
 
-            function showError(message) {
-                errorText.textContent = message;
-                errorContainer.classList.remove('hidden');
-                responseLlama.classList.add('hidden');
-                responseLlava.classList.add('hidden');
-            }
-        });
-    </script>
+          responseLlama.innerHTML = marked.parse(result.llama);
+          responseLlama.classList.remove('hidden');
+          responseLlava.innerHTML = marked.parse(result.llava);
+          responseLlava.classList.remove('hidden');
+          errorContainer.classList.add('hidden');
+        } catch (error) {
+          console.error('Error:', error);
+          showError(error.message);
+        } finally {
+          submitQuery.disabled = false;
+          submitQuery.textContent = '';
+          // Reset button content with icon and text after processing
+          submitQuery.innerHTML = `<img src="rocket.png" alt="Rocket Icon" class="h-[24px] w-[24px] inline-block mr-2" />Submit Query`;
+        }
+      });
 
+      function showError(message) {
+        errorText.textContent = message;
+        errorContainer.classList.remove('hidden');
+        responseLlama.classList.add('hidden');
+        responseLlava.classList.add('hidden');
+      }
+    });
+  </script>
 </body>
 </html>
