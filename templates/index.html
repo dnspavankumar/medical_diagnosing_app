@@ -7,177 +7,103 @@
   <script src="https://cdn.tailwindcss.com"></script>
   <script src="https://kit.fontawesome.com/your-fontawesome-kit.js" crossorigin="anonymous"></script>
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <script defer src="script.js"></script>
   <style>
-    /* Body with dark background color */
     body {
-      position: relative;
       margin: 0;
       padding: 0;
       font-family: 'Poppins', sans-serif;
-      background: linear-gradient(135deg, #000000, #001f3d); /* Dominant black with hint of blue */
-      background-attachment: fixed;
+      background: #0a0a0a;
       height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      color: #e0e0e0;
+      position: relative;
     }
 
-    /* Custom styling for emojis */
-    .emoji {
-      font-size: 2.5rem; /* Slightly smaller size for emojis */
-      color: white; /* Ensure emojis are white */
+    body::before {
+      content: "";
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background-image: url('https://files.oaiusercontent.com/file-JQv13c7E5mTUTAA7PpS4z9?se=2025-03-04T17%3A32%3A59Z&sp=r&sv=2024-08-04&sr=b&rscc=max-age%3D604800%2C%20immutable%2C%20private&rscd=attachment%3B%20filename%3Dba58558d-8efd-4d73-987c-46d24d6f22a4.webp&sig=6dxSwWH63OBsIQE2MPDGqVrYLwbmveEhMARIoezwJh0%3D');
+      background-attachment: fixed;
+      background-size: cover;
+      opacity: 0.3; /* Adjust the opacity here */
+      z-index: -1; /* Ensure the image stays in the background */
     }
 
-    /* Glass Effect with more blur and opacity */
     .glass {
-      background: rgba(255, 255, 255, 0.05); /* Reduced opacity for more prominence */
-      border-radius: 15px;
-      box-shadow: 0 8px 32px rgba(0, 0, 0, 0.5); /* Stronger shadow for more depth */
-      backdrop-filter: blur(1px); /* Increased blur */
-      border: 1px solid rgba(255, 255, 255, 0.1); /* Soft white border */
+      background: rgba(255, 255, 255, 0.1);
+      border-radius: 20px;
+      box-shadow: 0 10px 30px rgba(0, 0, 0, 0.6);
+      backdrop-filter: blur(10px);
+      -webkit-backdrop-filter: blur(10px);
+      border: 1px solid rgba(255, 255, 255, 0.2);
+      transition: all 0.3s ease-in-out;
+    }
+
+    .glass:hover {
+      transform: scale(1.02);
+      box-shadow: 0 15px 40px rgba(0, 0, 0, 0.7);
     }
   </style>
 </head>
-<body class="min-h-screen flex items-center justify-center p-6">
+<body class="p-6">
   <div class="container mx-auto p-6">
-    <!-- Main Header with Emoji -->
     <div class="flex items-center justify-center mb-12">
-      <span class="text-4xl font-bold bg-gradient-to-r from-pink-500 to-yellow-500 bg-clip-text text-transparent shadow-md">
-        <span class="emoji">📷</span> MEDIC Vision
-      </span>
+      <h1 class="text-5xl font-bold bg-gradient-to-r from-purple-500 to-blue-500 bg-clip-text text-transparent shadow-md">
+        MEDIC Vision
+      </h1>
     </div>
     
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-8">
-      <!-- Upload Image Card -->
-      <div class="glass p-6 rounded-xl shadow-lg border border-white/20">
-        <h2 class="text-xl font-semibold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent mb-4">
-          <span class="emoji">📤</span> Upload Image
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10 mb-10">
+      <div class="glass p-8 rounded-2xl shadow-lg border border-white/20">
+        <h2 class="text-2xl font-semibold bg-gradient-to-r from-red-500 to-orange-500 bg-clip-text text-transparent mb-6">
+          Upload Image
         </h2>
-        <button id="upload-btn" class="w-full py-3 bg-red-500 hover:bg-red-600 text-white font-bold rounded-2xl transition-all transform hover:scale-105">
+        <button id="upload-btn" class="w-full py-4 bg-red-600 hover:bg-red-700 text-white font-bold rounded-xl transition-all transform hover:scale-105">
           Click to Upload
         </button>
         <input type="file" id="image-upload" accept="image/*" class="hidden" />
-        <div id="image-container" class="hidden mt-4">
-          <img id="display-image" src="" alt="Uploaded image" class="w-full rounded-lg shadow-lg" />
+        <div id="image-container" class="hidden mt-6">
+          <img id="display-image" src="" alt="Uploaded image" class="w-full rounded-xl shadow-lg" />
         </div>
       </div>
 
-      <!-- Ask Question Card -->
-      <div class="glass p-6 rounded-xl shadow-lg border border-white/20">
-        <h2 class="text-xl font-semibold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-4">
-          <span class="emoji">❓</span> Ask Question
+      <div class="glass p-8 rounded-2xl shadow-lg border border-white/20">
+        <h2 class="text-2xl font-semibold bg-gradient-to-r from-blue-500 to-purple-500 bg-clip-text text-transparent mb-6">
+          Ask Question
         </h2>
-        <textarea id="query-input" rows="4" placeholder="Enter your question about the image" class="w-full p-3 bg-gray-800 text-gray-300 rounded-lg shadow"></textarea>
-        <button id="submit-query" class="w-full bg-gradient-to-r from-blue-400 to-blue-600 hover:from-blue-500 hover:to-blue-700 text-white font-bold py-2 px-4 rounded-2xl mt-3 transition-all transform hover:scale-105">
-          <span class="emoji">🚀</span> Submit Query
+        <textarea id="query-input" rows="4" placeholder="Enter your question about the image" class="w-full p-4 bg-gray-800 text-gray-300 rounded-lg shadow"></textarea>
+        <button id="submit-query" class="w-full bg-gradient-to-r from-blue-600 to-blue-800 hover:from-blue-700 hover:to-blue-900 text-white font-bold py-3 px-5 rounded-xl mt-4 transition-all transform hover:scale-105">
+          Submit Query
         </button>
       </div>
     </div>
     
-    <div class="grid grid-cols-1 lg:grid-cols-2 gap-8">
-      <!-- Llama-3.2-11b-vision Response Card -->
-      <div class="glass p-6 rounded-xl shadow-lg border border-white/20">
-        <h2 class="text-xl font-semibold bg-gradient-to-r from-green-500 to-teal-500 bg-clip-text text-transparent">
-          <span class="emoji">🤖</span> IMAGE ANALYSIS
+    <div class="grid grid-cols-1 lg:grid-cols-2 gap-10">
+      <div class="glass p-8 rounded-2xl shadow-lg border border-white/20">
+        <h2 class="text-2xl font-semibold bg-gradient-to-r from-blue-500 to-pink-500 bg-clip-text text-transparent">
+          IMAGE ANALYSIS
         </h2>
-        <div id="response-container-llama11b" class="hidden mt-4 bg-gray-800 p-4 rounded text-gray-300"></div>
+        <div id="response-container-llama11b" class="hidden mt-6 bg-gray-800 p-6 rounded-xl text-gray-300"></div>
       </div>
       
-      <!-- Llama-3.2-90b-vision Response Card -->
-      <div class="glass p-6 rounded-xl shadow-lg border border-white/20">
-        <h2 class="text-xl font-semibold bg-gradient-to-r from-green-500 to-teal-500 bg-clip-text text-transparent">
-          <span class="emoji">🤖</span> DEEP ANALYSIS
+      <div class="glass p-8 rounded-2xl shadow-lg border border-white/20">
+        <h2 class="text-2xl font-semibold bg-gradient-to-r from-blue-500 to-pink-500 bg-clip-text text-transparent">
+          DEEP ANALYSIS
         </h2>
-        <div id="response-container-llama90b" class="hidden mt-4 bg-gray-800 p-4 rounded text-gray-300"></div>
+        <div id="response-container-llama90b" class="hidden mt-6 bg-gray-800 p-6 rounded-xl text-gray-300"></div>
       </div>
     </div>
 
-    <!-- Error Message -->
-    <div id="error-container" class="hidden mt-8 p-4 bg-red-500 text-white rounded">
+    <div id="error-container" class="hidden mt-10 p-6 bg-red-600 text-white rounded-xl shadow-lg">
       <p id="error-text"></p>
     </div>
   </div>
-
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      const uploadBtn = document.getElementById('upload-btn');
-      const imageUpload = document.getElementById('image-upload');
-      const displayImage = document.getElementById('display-image');
-      const imageContainer = document.getElementById('image-container');
-      const queryInput = document.getElementById('query-input');
-      const submitQuery = document.getElementById('submit-query');
-      const responseLlama = document.getElementById('response-container-llama11b');
-      const responseLlava = document.getElementById('response-container-llama90b');
-      const errorContainer = document.getElementById('error-container');
-      const errorText = document.getElementById('error-text');
-
-      // Trigger file upload dialog
-      uploadBtn.addEventListener('click', () => {
-        imageUpload.click();
-      });
-
-      // Display uploaded image
-      imageUpload.addEventListener('change', (event) => {
-        const file = event.target.files[0];
-        if (file) {
-          const reader = new FileReader();
-          reader.onload = (e) => {
-            displayImage.src = e.target.result;
-            imageContainer.classList.remove('hidden');
-          };
-          reader.readAsDataURL(file);
-        }
-      });
-
-      // Submit query along with image
-      submitQuery.addEventListener('click', async () => {
-        const image = imageUpload.files[0];
-        const query = queryInput.value;
-
-        if (!image || !query) {
-          showError('⚠️ Please upload an image and enter a query.');
-          return;
-        }
-
-        const formData = new FormData();
-        formData.append('image', image);
-        formData.append('query', query);
-
-        try {
-          submitQuery.disabled = true;
-          submitQuery.textContent = 'Processing... ⏳';
-
-          const response = await fetch('/upload_and_query', {
-            method: 'POST',
-            body: formData
-          });
-
-          const result = await response.json();
-
-          if (!response.ok) {
-            throw new Error(result.detail || 'An error occurred while processing your request.');
-          }
-
-          responseLlama.innerHTML = marked.parse(result.llama);
-          responseLlama.classList.remove('hidden');
-          responseLlava.innerHTML = marked.parse(result.llava);
-          responseLlava.classList.remove('hidden');
-          errorContainer.classList.add('hidden');
-        } catch (error) {
-          console.error('Error:', error);
-          showError(error.message);
-        } finally {
-          submitQuery.disabled = false;
-          submitQuery.textContent = '';
-          // Reset button content with icon and text after processing
-          submitQuery.innerHTML = `<span class="emoji">🚀</span> Submit Query`;
-        }
-      });
-
-      function showError(message) {
-        errorText.textContent = message;
-        errorContainer.classList.remove('hidden');
-        responseLlama.classList.add('hidden');
-        responseLlava.classList.add('hidden');
-      }
-    });
-  </script>
 </body>
 </html>
