@@ -394,10 +394,7 @@
                         throw new Error(result.detail || 'An error occurred during analysis. Please try again.');
                     }
 
-                    // Hide loading animations and show results
-                    responseLlama.classList.add('hidden');  // Hide loading animation for Llama
-                    responseLlava.classList.add('hidden');  // Hide loading animation for Llava
-                    
+                    // Hide loading and show results
                     responseLlamaOutput.innerHTML = marked.parse(result.llama);
                     responseLlamaOutput.classList.remove('hidden');
                     responseLlavaOutput.innerHTML = marked.parse(result.llava);
