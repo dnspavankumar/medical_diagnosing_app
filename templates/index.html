@@ -183,7 +183,10 @@
                 </div>
                 
                 <div id="response-container-llama11b" class="hidden">
-                    <div class="animate-pulse flex space-x-4 mb-4">
+                    <div class="animate-pulse flex space-x-4 mb-4" id="llama11b-loading">
+                        <!-- loading content -->
+                    </div>
+                    <div class="animate-pulse flex space-x-4 mb-4 mb-4">
                         <div class="flex-1 space-y-4 py-1">
                             <div class="h-4 bg-gray-700 rounded w-3/4"></div>
                             <div class="space-y-2">
@@ -209,6 +212,9 @@
                 </div>
                 
                 <div id="response-container-llama90b" class="hidden">
+                    <div class="animate-pulse flex space-x-4 mb-4" id="llama90b-loading">
+                        <!-- loading content -->
+                    </div>
                     <div class="animate-pulse flex space-x-4 mb-4">
                         <div class="flex-1 space-y-4 py-1">
                             <div class="h-4 bg-gray-700 rounded w-3/4"></div>
@@ -382,6 +388,10 @@
                     responseLlava.classList.remove('hidden');
                     responseLlamaOutput.classList.add('hidden');
                     responseLlavaOutput.classList.add('hidden');
+                    
+                    // Get loading elements
+                    const llama11bLoading = document.getElementById('llama11b-loading');
+                    const llama90bLoading = document.getElementById('llama90b-loading');
 
                     const response = await fetch('/upload_and_query', {
                         method: 'POST',
@@ -394,7 +404,11 @@
                         throw new Error(result.detail || 'An error occurred during analysis. Please try again.');
                     }
 
-                    // Hide loading and show results
+                    // Hide loading animations
+                    llama11bLoading.classList.add('hidden');
+                    llama90bLoading.classList.add('hidden');
+
+                    // Display results
                     responseLlamaOutput.innerHTML = marked.parse(result.llama);
                     responseLlamaOutput.classList.remove('hidden');
                     responseLlavaOutput.innerHTML = marked.parse(result.llava);
